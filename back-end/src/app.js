@@ -158,3 +158,22 @@ app.put("/usuarios/:id", async(req,res)=>{
 app.listen(3000, () => {
   console.log(`Servidor rodando na porta: 3000`);
 });
+
+
+// crie um get de likes 
+app.post("/likes", async (req, res) => {
+  try {
+    const { body } = req;
+    const [results] = await pool.query(
+      "INSERT INTO likes (id_usuario, id_log) VALUES (?, ?)",
+      [body.id_usuario, body.id_log]
+    );
+    const [likeRegistrado] = await pool.query(
+      "SELECT * FROM likes WHERE id_like=?",
+      results.insertId
+    );
+    return res.status(201).json(likeRegistrado);
+  } catch (error) {
+    console.log(error);
+  }
+});

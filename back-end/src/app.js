@@ -44,12 +44,37 @@ app.post("/login", async (req, res) => {
   }
 });
 //LOG
+app.get("/logs", async (req, res) => {
+  const {query} = req;
+  const pagina = Number(query.pagina) - 1
+  const quantidade = Number(query.quantidade)
+  const offset = pagina * quantidade
+  const [results] = await pool.query(`
+    SELECT * FROM log LIMIT ? 
+    OFFSET ?
+   `, [quantidade, offset]);
+  res.send(results);
+});
+
+app.get("/log/categoria", async (req, res) => {
+  try {
+    const [results] = await pool.query(
+      "SELECT DISTINCT(categoria) FROM log"
+    );
+    res.status(201).json(results);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Erro ao buscar categ"})
+    
+  }
+});
+
 app.post("/log", async (req, res) => {
   try {
     const {body} = req;
     const [results] = await pool.query(
-      "INSERT INTO log (categoria, horas_trabalhadas, linha_de_codigo, bugs_corrigidos) VALUES (?, ?, ?, ?)",
-      [body.categoria, body.horas_trabalhadas, body.linha_de_codigo, body.bugs_corrigidos]
+      "INSERT INTO log (categoria, horas_trabalhadas, linhas_codigo, bugs_corrigidos) VALUES (?, ?, ?, ?)",
+      [body.categoria, body.horas_trabalhadas, body.linhas_codigo, body.bugs_corrigidos]
     );
     const [logRegistrado] = await pool.query(
       "SELECT * FROM log WHERE id_log",
@@ -60,6 +85,29 @@ app.post("/log", async (req, res) => {
    console.log(error)
   }
 })
+
+//LIKES
+app.get("/likes", async (req, res) => {
+  const [results] = await pool.query("SELECT * FROM likes");
+  res.send(results);
+});
+app.post("/likes", async (req, res) => {
+  try {
+    const { body } = req;
+    const [results] = await pool.query(
+      "INSERT INTO likes (id_like, id_log, id) VALUES (?, ?, ?)",
+      [body.id_usuario, body.id_log, body.id]
+    );
+    const [likeRegistrado] = await pool.query(
+      "SELECT * FROM likes WHERE id_like=?",
+      results.insertId
+    );
+    return res.status(201).json(likeRegistrado);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 // REGISTRAR
 app.post("/registrar", async (req, res) => {
   try {

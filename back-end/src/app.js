@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import mysql from "mysql2/promise";
 const pool = await mysql.createConnection({
   host: "localhost",
@@ -6,13 +7,16 @@ const pool = await mysql.createConnection({
   password: "senai",
   database: "senai",
 });
+
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("Olá Mundo");
 });
 
+// USUARIOS
 app.get("/usuarios", async (req, res) => {
   const [results] = await pool.query("SELECT * FROM usuario");
   res.send(results);
@@ -20,109 +24,27 @@ app.get("/usuarios", async (req, res) => {
 
 app.get("/usuarios/:id", async (req, res) => {
   const { id } = req.params;
-  const [results] = await pool.query("SELECT * FROM usuario WHERE idusuario=?", id);
-  res.send(results);
-});
-//LOGIN
-app.post("/login", async (req, res) => {
-  try {
-    const { body } = req;
-    
-
-    const [usuarioLogado] = await pool.query(
-      "SELECT * FROM usuario WHERE email=? and senha=?",
-      [body.email, body.senha]
-    );
-
-    if (usuarioLogado.length > 0) {
-       return res.status(200).json(usuarioLogado);
-    }
-        return res.status(404).json("deu erro");
-   
-  } catch (error) {
-    console.log(error);
-  }
-});
-//LOG
-app.get("/logs", async (req, res) => {
-  const {query} = req;
-  const pagina = Number(query.pagina) - 1
-  const quantidade = Number(query.quantidade)
-  const offset = pagina * quantidade
-  const [results] = await pool.query(`
-    SELECT * FROM log LIMIT ? 
-    OFFSET ?
-   `, [quantidade, offset]);
+  const [results] = await pool.query(
+    "SELECT * FROM usuario WHERE idusuario=?",
+    id
+  );
   res.send(results);
 });
 
-app.get("/log/categoria", async (req, res) => {
-  try {
-    const [results] = await pool.query(
-      "SELECT DISTINCT(categoria) FROM log"
-    );
-    res.status(201).json(results);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Erro ao buscar categ"})
-    
-  }
-});
-
-app.post("/log", async (req, res) => {
-  try {
-    const {body} = req;
-    const [results] = await pool.query(
-      "INSERT INTO log (categoria, horas_trabalhadas, linhas_codigo, bugs_corrigidos) VALUES (?, ?, ?, ?)",
-      [body.categoria, body.horas_trabalhadas, body.linhas_codigo, body.bugs_corrigidos]
-    );
-    const [logRegistrado] = await pool.query(
-      "SELECT * FROM log WHERE id_log",
-      results.insertId
-    );
-    return res.status(201).json(logRegistrado);
-  } catch (error) {
-   console.log(error)
-  }
-})
-
-//LIKES
-app.get("/likes", async (req, res) => {
-  const [results] = await pool.query("SELECT * FROM likes");
-  res.send(results);
-});
-app.post("/likes", async (req, res) => {
+app.post("/usuarios", async (req, res) => {
   try {
     const { body } = req;
     const [results] = await pool.query(
-      "INSERT INTO likes (id_like, id_log, id) VALUES (?, ?, ?)",
-      [body.id_usuario, body.id_log, body.id]
-    );
-    const [likeRegistrado] = await pool.query(
-      "SELECT * FROM likes WHERE id_like=?",
-      results.insertId
-    );
-    return res.status(201).json(likeRegistrado);
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-// REGISTRAR
-app.post("/registrar", async (req, res) => {
-  try {
-    const { body } = req;
-    const [results] = await pool.query(
-      "INSERT INTO usuario (nome,idade, email, senha) VALUES (?,?, ?,?)",
-      [body.nome, body.idade, body.email, body.senha]
+      "INSERT INTO usuario (nome,idade) VALUES (?,?)",
+      [body.nome, body.idade]
     );
 
-    const [usuarioRegistrado] = await pool.query(
-      "Select * from usuario WHERE id_usuario=?",
+    const [usuarioCriado] = await pool.query(
+      "Select * from usuario WHERE idusuario=?",
       results.insertId
     );
 
-    return res.status(201).json(usuarioRegistrado);
+    return res.status(201).json(usuarioCriado);
   } catch (error) {
     console.log(error);
   }
@@ -135,45 +57,156 @@ app.delete("/usuarios/:id", async (req, res) => {
       "DELETE FROM usuario WHERE idusuario=?",
       id
     );
-    res.status(200).send("Usuário deletado!", results)
+    res.status(200).send("Usuário deletado!", results);
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 });
 
-app.put("/usuarios/:id", async(req,res)=>{
+app.put("/usuarios/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { body } = req
+    const { body } = req;
     const [results] = await pool.query(
-     "UPDATE usuario SET `nome` = ?, `idade` = ? WHERE idusuario = ?; ",
+      "UPDATE usuario SET `nome` = ?, `idade` = ? WHERE idusuario = ?; ",
       [body.nome, body.idade, id]
-    )
-    res.status(200).send("Usuario atualizado", results)
-  } catch (error) { 
-    console.log(error)
+    );
+    res.status(200).send("Usuario atualizado", results);
+  } catch (error) {
+    console.log(error);
   }
-})
-
-app.listen(3000, () => {
-  console.log(`Servidor rodando na porta: 3000`);
 });
 
+// REGISTRO E LOGIN
+app.post("/registrar", async (req, res) => {
+  try {
+    const { body } = req;
+    const [results] = await pool.query(
+      "INSERT INTO usuario (nome,idade, email, senha) VALUES (?,?,?,?)",
+      [body.nome, body.idade, body.email, body.senha]
+    );
 
-// crie um get de likes 
+    const [usuarioCriado] = await pool.query(
+      "Select * from usuario WHERE id=?",
+      results.insertId
+    );
+
+    return res.status(201).json(usuarioCriado);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+/* LOGIN */
+app.post("/login", async (req, res) => {
+  try {
+    const { body } = req;
+
+    const [usuario] = await pool.query(
+      "Select * from usuario WHERE email=? and senha=?",
+      [body.email, body.senha]
+    );
+
+    if (usuario.length > 0) {
+      return res.status(200).json({
+        message: "Usuario logado",
+        dados: usuario,
+      });
+    } else {
+      return res.status(404).send("Email ou senha errados!");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+// LOGS
+app.get("/logs", async (req, res) => {
+  const { query } = req;
+  const pagina = Number(query.pagina) - 1;
+  const quantidade = Number(query.quantidade);
+  const offset = pagina * quantidade;
+
+  const [results] = await pool.query(
+    `
+      SELECT
+      lgs.id,
+        lgs.categoria,
+        lgs.horas_trabalhadas,
+        lgs.linhas_codigo,
+        lgs.bugs_corrigidos,
+      COUNT(devhub.like.log_id) as likes
+    FROM
+      devhub.lgs 
+    left JOIN devhub.like
+    ON devhub.like.log_id = devhub.lgs.id
+     left JOIN devhub.like
+    ON devhub.like.log_id = devhub.lgs.id
+    GROUP BY
+    lgs.id,
+      lgs.categoria,
+      lgs.horas_trabalhadas,
+      lgs.linhas_codigo,
+      lgs.bugs_corrigidos 
+    ORDER BY devhub.lgs.id asc
+      LIMIT ?
+      OFFSET ?
+    ;     `,
+    [quantidade, offset]
+  );
+  res.send(results);
+});
+
+// Cadastro de logs
+app.post("/logs", async (req, res) => {
+  try {
+    const { body } = req;
+    const [results] = await pool.query(
+      "INSERT INTO lgs(categoria, horas_trabalhadas, linhas_codigo, bugs_corrigidos) VALUES (?, ?, ?, ?)",
+      [
+        body.categoria,
+        body.horas_trabalhadas,
+        body.linhas_codigo,
+        body.bugs_corrigidos,
+      ]
+    );
+    const [logCriado] = await pool.query(
+      "SELECT * FROM lgs WHERE id=?",
+      results.insertId
+    );
+    res.status(201).json(logCriado);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//likes
+app.get("/likes", async (req, res) => {
+  try {
+    const [results] = await pool.query("SELECT * FROM `like`");
+    res.send(results);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 app.post("/likes", async (req, res) => {
   try {
     const { body } = req;
     const [results] = await pool.query(
-      "INSERT INTO likes (id_usuario, id_log) VALUES (?, ?)",
-      [body.id_usuario, body.id_log]
+      "INSERT INTO `like`(log_id, user_id) VALUES(?, ?)",
+      [body.log_id, body.user_id]
     );
-    const [likeRegistrado] = await pool.query(
-      "SELECT * FROM likes WHERE id_like=?",
+    const [likeCriado] = await pool.query(
+      "SELECT * FROM `like` WHERE id=?",
       results.insertId
     );
-    return res.status(201).json(likeRegistrado);
+    res.status(201).json(likeCriado);
   } catch (error) {
     console.log(error);
   }
+});
+
+app.listen(3000, () => {
+  console.log(`Servidor rodando na porta: 3000`);
 });

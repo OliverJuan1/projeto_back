@@ -1,17 +1,7 @@
-a {
-    color: #000 !important;
-    text-decoration: none !important;
-}
-
-a:hover {
-    text-decoration: underline !important;
-    opacity: 0.5;
-}
-
-#frmLogin { 
+#frmLogin {
     /* margin: 0 auto; */
     width: 400px;
-    height: 350px;
+    height: 300px;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;

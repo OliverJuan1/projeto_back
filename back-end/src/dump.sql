@@ -20,7 +20,7 @@ CREATE TABLE log(
 
 USE devhub;
 INSERT INTO lgs (categoria, horas_trabalhadas, linhas_codigo, bugs_corrigidos) VALUES ('Desenvolvimento de Gameplay', 22, 1850, 2);
-INSERT INTO lgs (categoria, horas_trabalhadas, linhas_codigo, bugs_corrigidos) VALUES ('Arte e Design', 30, 45, 0);
+INSERT INTO log (categoria, horas_trabalhadas, linhas_codigo, bugs_corrigidos) VALUES ('Arte e Design', 30, 45, 0);
 INSERT INTO lgs (categoria, horas_trabalhadas, linhas_codigo, bugs_corrigidos) VALUES ('Correção de Bugs', 8, 90, 7);
 INSERT INTO lgs (categoria, horas_trabalhadas, linhas_codigo, bugs_corrigidos) VALUES ('Otimização', 16, 450, 1);
 INSERT INTO lgs (categoria, horas_trabalhadas, linhas_codigo, bugs_corrigidos) VALUES ('Desenvolvimento de UI/UX', 12, 680, 3);

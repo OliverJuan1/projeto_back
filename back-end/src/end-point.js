@@ -140,14 +140,14 @@ SELECT
   WHERE senai.likes.id_log  = lgs.id) AS likes,
 
   (SELECT count(*)
-   FROM senai.comment
-   WHERE senai.comment.id_log = lgs.id) AS qnt_comments
+   FROM devhub.comment
+   WHERE devhub.comment.id_log = lgs.id) AS qnt_comments
    FROM 
   senai.lgs
 
   ORDER BY 
   senai.lgs.id ASC 
-
+ 
   LIMIT ?
   OFFSET ?;
     `, [quantidade, offset]);

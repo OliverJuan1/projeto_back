@@ -1,4 +1,4 @@
-CREATE DATABASE senai;
+CREATE DATABASE devhub;
 
 
 CREATE TABLE usuario(
@@ -16,6 +16,27 @@ CREATE TABLE log(
     linhas_codigo INT,
     bugs_corrigidos INT
 );
+
+
+CREATE TABLE likes (
+    log_id INT NOT NULL,
+    user_id INT NOT NULL,
+    FOREIGN KEY (log_id) REFERENCES lgs(id),
+    FOREIGN KEY (user_id) REFERENCES usuario(id_usuario)
+);
+
+
+CREATE TABLE comments (
+    log_id INT NOT NULL,
+    user_id INT NOT NULL,
+    message VARCHAR(255),
+    FOREIGN KEY (log_id) REFERENCES lgs(id),
+    FOREIGN KEY (user_id) REFERENCES usuario(id_usuario)
+);
+
+
+INSERT INTO usuario (nome, email, senha, idade)
+VALUES ("Alex", "a@gmail.com", "123", 22);
 
 
 USE devhub;

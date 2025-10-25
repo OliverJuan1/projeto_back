@@ -25,7 +25,7 @@ app.get("/usuarios", async (req, res) => {
 app.get("/usuarios/:id", async (req, res) => {
     const { id } = req.params;
     const [results] = await pool.query(
-        "SELECT * FROM usuario WHERE idusuario=?",
+        "SELECT * FROM usuario WHERE id=?",
         id
     );
     res.send(results);

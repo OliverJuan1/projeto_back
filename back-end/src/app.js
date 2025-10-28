@@ -136,8 +136,8 @@ app.get("/logs", async (req, res) => {
       lgs.linhas_codigo,
       lgs.bugs_corrigidos,
       (SELECT COUNT(*) 
-        FROM devhub.like 
-        WHERE devhub.like.log_id = lgs.id) AS likes,
+        FROM devhub.likes 
+        WHERE devhub.likes.log_id = lgs.id) AS likes,
       (SELECT COUNT(*) 
         FROM devhub.comment 
         WHERE devhub.comment.log_id = lgs.id) AS qnt_comments
@@ -180,7 +180,7 @@ app.post("/logs", async (req, res) => {
 //likes
 app.get("/likes", async (req, res) => {
   try {
-    const [results] = await pool.query("SELECT * FROM `like`");
+    const [results] = await pool.query("SELECT * FROM `likes`");
     res.send(results);
   } catch (error) {
     console.log(error);
@@ -191,11 +191,11 @@ app.post("/likes", async (req, res) => {
   try {
     const { body } = req;
     const [results] = await pool.query(
-      "INSERT INTO `like`(log_id, user_id) VALUES(?, ?)",
+      "INSERT INTO `likes`(log_id, user_id) VALUES(?, ?)",
       [body.log_id, body.user_id]
     );
     const [likeCriado] = await pool.query(
-      "SELECT * FROM `like` WHERE id=?",
+      "SELECT * FROM `likes` WHERE id=?",
       results.insertId
     );
     res.status(201).json(likeCriado);
@@ -208,7 +208,7 @@ app.delete("/like", async (req, res) => {
   try {
     const { query } = req;
     const [results] = await pool.query(
-      "DELETE FROM `like` WHERE user_id=? and log_id=?",
+      "DELETE FROM `likes` WHERE user_id=? and log_id=?",
       [query.user_id, query.log_id]
     );
     res.status(200).send("post descurtido!", results);

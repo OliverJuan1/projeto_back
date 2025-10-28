@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevHub Dashboard</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">DevHub</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+        aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-center" id="navbarNavDropdown">
+        <ul class="navbar-nav gap-3">
+          <li class="nav-item"><a class="nav-link active" href="#">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Projetos</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Comunidade</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Recursos</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container-fluid mt-5 px-5">
+    <div class="row">
+      <!-- Perfil -->
+      <div class="col-md-3">
+        <div class="card perfil-card text-center">
+
+          <div id="categoria">
+
+          </div>
+
+          <img src="/perfil.png" class="rounded-circle mx-auto mt-3" width="120" alt="Perfil">
+          <div class="card-body">
+            <h5 class="card-title fw-bold"></h5>
+            <p class="text-muted mb-1"></p>
+            <p class="small text-secondary"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logs -->
+      <div class="col-md-6">
+        <!-- Log 1 -->
+        <div class="card log-card mb-3">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-2">
+              <img src="https://via.placeholder.com/40" class="rounded-circle me-2" width="40" alt="User">
+              <div>
+                 <br>
+                <span class="text-muted small"></span>
+              </div>
+            </div>
+            <h6 class="fw-bold"></h6>
+            <p class="text-secondary small"></p>
+
+            <div class="d-flex justify-content-between text-muted small align-items-center">
+              <span></span>
+              <span></span>
+
+              <button class="btn btn-like" onclick="toggleLike(this)">
+                <img src="https://cdn-icons-png.flaticon.com/512/833/833472.png" alt="Like" width="16" class="me-1">
+                <span class="like-count"></span> 
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Log 2 -->
+        <div class="card log-card mb-3">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-2">
+              <img src="https://via.placeholder.com/40" class="rounded-circle me-2" width="40" alt="User">
+              <div>
+                <br>
+                <span class="text-muted small"></span>
+              </div>
+            </div>
+            <h6 class="fw-bold"></h6>
+            <p></p>
+
+            <div class="d-flex justify-content-between text-muted small align-items-center">
+              <span></span>
+              <span></span>
+
+              <button class="btn-like" onclick="like(id_logs, id_usuario)">
+                <img src="https://cdn-icons-png.flaticon.com/512/833/833472.png" alt="Like" width="16" class="me-1">
+                <span class="like-count"></span> 
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+
+
+    const url = "http://localhost:3000/logs?pagina=1&quantidade=10";
+    fetch(url, {
+        method: "get",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+    })
+    .then((res) => {
+        if(!res.ok)
+            console.log("resposta res: ", res)
+        return res.json();
+    }).then((data) => {
+        if(data)
+            console.log("dados: ", data)
+
+        let categoriasHTML = "";
+        if(data && Array.isArray(data)){
+            for (let index = 0; index < data.length; index++) {
+                const element = data[index];
+                console.log(element.categoria);
+                categoriasHTML += `<div style="border-radius: 4px; border: 1px #cacaca solid; padding: 20px;">
+                    Categoria: ${element.categoria} <br>
+                    <div style="display: flex; justify-content: column; ">
+                        Horas trabalhadas ${element.horas_trabalhadas}
+                        Linhas totais do código ${element.linhas_codigo}
+                        Bugs corrigidos ${element.bugs_corrigidos}
+                    </div>
+                    </div>`;
+            }
+        }
+        document.getElementById("categoria").innerHTML = categoriasHTML;
+    })
+    .catch((error) => console.log("ERROR: ", error))
+
+
+
+
+    // function like(id_logs, id_user) {
+    //   fetch("/like", {
+    //     method: "POST", 
+    //     body: JSON.stringify({id_logs: id_logs, id_user:id_user})
+    //   }).then(res => res.json())
+    //   .then(data => console.log(data));
+    //   .catch(error => console.log(error));
+    // }
+  </script>
+</body>
+</html>

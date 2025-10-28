@@ -1,34 +1,19 @@
-a {
-    color: #000 !important;
-    text-decoration: none !important;
-}
+body {
+    background-color: #f4f5f7;
+    font-family: "Inter", sans-serif;
+  }
+  
 
-a:hover {
-    text-decoration: underline !important;
-    opacity: 0.5;
-}
+  .perfil-card {
+    background-color: #fff;
+    border-radius: 12px;
+  }
+  
 
-#frmLogin { 
-    /* margin: 0 auto; */
-    width: 400px;
-    height: 350px;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  .log-card {
+    background-color: #fff;
+    border-radius: 10px;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 20% auto;
-}
-
-.btn {
-    width: 100px;
-}
-
-input {
-    width: 300px !important;
-}
+  }
+  
+  
